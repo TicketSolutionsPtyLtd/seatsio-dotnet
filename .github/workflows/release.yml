@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       versionToBump:
-        description: 'The version to bump. Major for incompatible API changes, minor for adding BC features'
+        description: "The version to bump. Major for incompatible API changes, minor for adding BC features"
         required: true
         type: choice
         options:
@@ -30,13 +30,12 @@ jobs:
         run: |
           wget -O /usr/local/bin/semver https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver
           chmod +x /usr/local/bin/semver
-      - run: zx ./release.mjs -v $VERSION_TO_BUMP
-        env:
-          VERSION_TO_BUMP: ${{ inputs.versionToBump }}
-          GH_TOKEN: ${{ github.token }}
+      # - run: zx ./release.mjs -v $VERSION_TO_BUMP
+      #   env:
+      #     VERSION_TO_BUMP: ${{ inputs.versionToBump }}
+      #     GH_TOKEN: ${{ github.token }}
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.x
-      - run: dotnet pack --configuration Release SeatsioDotNet/SeatsioDotNet.csproj -o SeatsioDotNet
-      - run: dotnet nuget push SeatsioDotNet/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}}
-      
+      - run: dotnet pack --configuration Release -p:PackageID=SeatsioDotNet-TicketSolutions SeatsioDotNet/SeatsioDotNet.csproj -o SeatsioDotNet
+      - run: dotnet nuget push SeatsioDotNet/*.nupkg --source https://octopus.ticketsolutions.com.au:1443/api/packages --api-key ${{secrets.NUGET_API_KEY}}
